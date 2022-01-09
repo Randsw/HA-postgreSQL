@@ -1,0 +1,15 @@
+---
+#- include_tasks: variables.yml
+
+- import_tasks: install.yml
+
+- import_tasks: configure.yml
+
+- meta: flush_handlers
+
+- name: Ensure patroni is running
+  systemd:
+    name: patroni.service
+    state: started
+    daemon_reload: yes
+    enabled: yes

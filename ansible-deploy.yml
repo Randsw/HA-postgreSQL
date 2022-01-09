@@ -1,0 +1,106 @@
+---
+- hosts: localhost
+  become: no
+  gather_facts: no
+
+  tasks: 
+
+    - name: Delete VM ssh fingerprint
+      become: false
+      shell: "ssh-keygen -f ~/.ssh/known_hosts -R {{ hostvars[item]['ansible_host'] }}"
+      register: known_hosts_delete
+      changed_when: "'updated' in known_hosts_delete.stdout"
+      loop: "{{ groups['all'] }}"
+
+    - name: Accept server SSH host keys
+      become: false
+      shell: |
+        ssh-keyscan -H {{ hostvars[item]['ansible_host'] }} >> ~/.ssh/known_hosts
+      register: known_hosts_script
+      until: known_hosts_script.rc == 0
+      retries: 5
+      delay: 1
+      changed_when: known_hosts_script.rc != 0
+      loop: "{{ groups['all'] }}"
+
+ 
+- hosts: all
+  become: yes
+  gather_facts: yes
+  
+  pre_tasks:
+     
+    - name: Disable cloud-init
+      lineinfile:
+        path: /etc/cloud/cloud-init.disabled
+        line: cloud-init=disabled
+        create: yes
+        state: present
+
+    - name: Print ip address of VW
+      debug:
+        var:  hostvars[item]['ansible_eth1']['ipv4']['address']
+      loop: "{{ groups['all'] }}"
+  
+    - name: Run the equivalent of "apt-get update" as a separate step
+      apt:
+        update_cache: yes
+
+    - name: Find timezone
+      command: timedatectl 
+      register: timedate_output
+      changed_when: false
+
+    - name: Set time zone
+      command: timedatectl set-timezone Europe/Moscow
+      when: '"Moscow" not in timedate_output.stdout'
+
+    - name: Fill /etc/hosts with hosts entry
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[item]['ansible_host'] }}  {{ item }}"
+      loop: "{{ groups['all'] }}"
+
+  roles:
+    - { role: ansible-ntp-master }
+
+- hosts: etcds
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - { role: igor_nikiforov.etcd }
+
+- hosts: haproxys
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - { role: geerlingguy.haproxy }
+
+- hosts: postgres_instances
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Install pip
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+      loop:
+        - python3-pip
+        - python3-dev
+        - libpq-dev
+    - name: Install openshift
+      pip:
+        name: "{{ item }}"
+      loop:
+        - patroni
+        - python-etcd
+        - psycopg2
+  roles:
+    - { role: geerlingguy.postgresql }
+    - { role: patroni }
+
+

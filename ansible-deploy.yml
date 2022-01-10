@@ -81,6 +81,7 @@
 - hosts: postgres_instances
   become: yes
   gather_facts: yes
+  serial: 1
 
   pre_tasks:
     # - name: Install pip

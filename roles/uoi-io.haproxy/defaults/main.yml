@@ -110,14 +110,15 @@ haproxy_backend: []
 # Listen
 haproxy_listen:
   - HA_postgre:
-       binds:
-        - *:5000
+      binds:
+        - "*:5000"
       mode: http
       options: [httpchk]
       http-check: expect status 200
       servers:
-        - "postgresql_1 {{ hostvars[groups['postgres_instances'][0]]['ansible_host'}}:5432 maxconn 100 check port 8008"
-        - "postgresql_1 {{ hostvars[groups['postgres_instances'][1]]['ansible_host'}}:5432 maxconn 100 check port 8008"
+        - "postgresql_1 {{ hostvars[groups['postgres_instances'][0]]['ansible_host']}}:5432 maxconn 100 check port 8008"
+        - "postgresql_2 {{ hostvars[groups['postgres_instances'][1]]['ansible_host']}}:5432 maxconn 100 check port 8008"
+      default_server: "inter 3s fall 3 rise 2 on-marked-down shutdown-sessions"
 
 
 # Peer

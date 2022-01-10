@@ -9,7 +9,20 @@
       - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "127.0.0.1/32", method: "md5"}
       - { type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
     patroni_postgresql_config_dir: "/etc/postgresql/{{ patroni_postgresql_version }}/{{ patroni_scope }}"
-    #ansible_host: "127.0.0.1"
+    etcd_config:
+      name: "{{ ansible_facts.hostname }}"
+      data-dir: "/var/lib/etcd/data"
+      wal-dir: "/var/lib/etcd/wal"
+      initial-advertise-peer-urls: "http://{{ ansible_default_ipv4.address }}:2380"
+      initial-cluster-token: "token"
+      initial-cluster-state: "new"
+      advertise-client-urls: "http://{{ ansible_default_ipv4.address }}:2379"
+      listen-client-urls: "http://{{ ansible_default_ipv4.address }}:2379,http://127.0.0.1:2379"
+      listen-peer-urls: "http://{{ ansible_default_ipv4.address }}:2380,http://127.0.0.1:2380"
+      log-level: "debug"
+      logger: "zap"
+      initial-cluster: "{{ ansible_facts.hostname }}=http://{{ ansible_default_ipv4.address }}:2380,"
+      enable-grpc-gateway: true
 
   pre_tasks:
     - name: Update apt cache.

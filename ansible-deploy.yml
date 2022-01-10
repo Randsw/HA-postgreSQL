@@ -76,29 +76,29 @@
   gather_facts: yes
 
   roles:
-    - { role: geerlingguy.haproxy }
+    - { role: uoi-io.haproxy }
 
 - hosts: postgres_instances
   become: yes
   gather_facts: yes
 
   pre_tasks:
-    - name: Install pip
-      apt:
-        name: python3-pip
-        state: present
-        update_cache: yes
-      loop:
-        - python3-pip
-        - python3-dev
-        - libpq-dev
-    - name: Install openshift
-      pip:
-        name: "{{ item }}"
-      loop:
-        - patroni
-        - python-etcd
-        - psycopg2
+    # - name: Install pip
+    #   apt:
+    #     name: python3-pip
+    #     state: present
+    #     update_cache: yes
+    #   loop:
+    #     - python3-pip
+    #     - python3-dev
+    #     - libpq-dev
+    # - name: Install openshift
+    #   pip:
+    #     name: "{{ item }}"
+    #   loop:
+    #     - patroni
+    #     - python-etcd
+    #     - psycopg2
   roles:
     - { role: geerlingguy.postgresql }
     - { role: patroni }

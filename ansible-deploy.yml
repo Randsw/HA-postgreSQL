@@ -64,6 +64,14 @@
   roles:
     - { role: ansible-ntp-master }
 
+- hosts: postgres_instances
+  become: yes
+  gather_facts: yes
+  serial: 1
+
+  roles:
+    - { role: geerlingguy.postgresql }
+
 - hosts: etcds
   become: yes
   gather_facts: yes
@@ -78,30 +86,11 @@
   roles:
     - { role: uoi-io.haproxy }
 
-- hosts: postgres_instances
+- hosts: postgres-1 #postgres_instances
   become: yes
   gather_facts: yes
   serial: 1
 
-  pre_tasks:
-    # - name: Install pip
-    #   apt:
-    #     name: python3-pip
-    #     state: present
-    #     update_cache: yes
-    #   loop:
-    #     - python3-pip
-    #     - python3-dev
-    #     - libpq-dev
-    # - name: Install openshift
-    #   pip:
-    #     name: "{{ item }}"
-    #   loop:
-    #     - patroni
-    #     - python-etcd
-    #     - psycopg2
   roles:
-    - { role: geerlingguy.postgresql }
     - { role: patroni }
-
 

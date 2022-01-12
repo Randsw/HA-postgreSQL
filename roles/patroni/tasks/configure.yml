@@ -8,6 +8,15 @@
     mode: 0750
   when: patroni_install_from_pip
 
+- name: Create patroni data directory
+  file:
+    path: "{{ patroni_postgresql_data_dir }}"
+    state: directory
+    owner: "{{ patroni_system_user }}"
+    group: "{{ patroni_system_group }}"
+    mode: 0750
+  when: patroni_install_from_pip
+
 - name: Create patroni log directory
   file:
     path: "{{ patroni_log_dir }}"

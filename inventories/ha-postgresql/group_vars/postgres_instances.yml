@@ -1,0 +1,2 @@
+patroni_postgresql_version: 12
+postgresql_bin_dir: "/usr/lib/postgresql/{{ patroni_postgresql_version }}/bin"

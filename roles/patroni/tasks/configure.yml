@@ -17,6 +17,17 @@
     mode: 0750
   when: patroni_install_from_pip
 
+- name: Prepare PostgreSQL | make sure the data directory "{{ patroni_postgresql_data_dir }}" is empty
+  file:
+    path: "{{ patroni_postgresql_data_dir }}"
+    state: "{{ item }}"
+    owner: "{{ patroni_system_user }}"
+    group: "{{ patroni_system_group }}"
+    mode: 0700
+  loop:
+    - absent
+    - directory
+
 - name: Create patroni log directory
   file:
     path: "{{ patroni_log_dir }}"

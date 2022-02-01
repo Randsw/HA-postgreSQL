@@ -112,7 +112,7 @@ haproxy_listen:
   - HA_postgre:
       binds:
         - "*:5000"
-      mode: http
+      mode: tcp
       options: [httpchk]
       http-check: expect status 200
       servers:

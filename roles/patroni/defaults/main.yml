@@ -130,6 +130,8 @@ patroni_bootstrap_pg_hba:
   - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "{{ hostvars[groups['postgres_instances'][1]]['ansible_host']}}/0", method: "md5"}
   - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "127.0.0.1/32", method: "trust"}
   - { type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
+  - { type: "local", database: "all", user: "all", method: "trust"}
+  - { type: "local", database: "replication", user: "all", method: "trust"}
 
 patroni_bootstrap_post_bootstrap: "" #TODO
 patroni_bootstrap_post_init: "" #TODO
@@ -146,6 +148,14 @@ patroni_postgresql_authentication:
   - { type: "superuser",   username: "{{ patroni_superuser_username }}",   password: "{{ patroni_superuser_password }}" }
   - { type: "replication", username: "{{ patroni_replication_username }}", password: "{{ patroni_replication_password }}" }
   - { type: "rewind", username: rewind_user, password: rewind_password }
+
+patroni_postgresql_pg_hba:
+  - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "{{ hostvars[groups['postgres_instances'][0]]['ansible_host']}}/0", method: "md5"}
+  - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "{{ hostvars[groups['postgres_instances'][1]]['ansible_host']}}/0", method: "md5"}
+  - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "127.0.0.1/32", method: "trust"}
+  - { type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
+  - { type: "local", database: "all", user: "all", method: "trust"}
+  - { type: "local", database: "replication", user: "all", method: "trust"}
 
 
 patroni_postgresql_data_dir: "/var/lib/postgresql/{{ patroni_postgresql_version }}/{{ patroni_scope }}"
@@ -172,7 +182,7 @@ patroni_system_packages:
   - { name: "python3-pip",      state: "present" }
   - { name: "jq",              state: "present" }
 
-atroni_postgresql_callbacks_dir: callbacks
+patroni_postgresql_callbacks_dir: callbacks
 patroni_postgresql_callbacks:
   - { event: "on_reload",      script: "" }
   - { event: "on_restart",     script: "" }

@@ -1,0 +1,31 @@
+---
+name: Patroni-role-CI
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+
+  test:
+    name: Patroni-role
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies
+        run: pip3 install molecule[docker] yamllint ansible-lint ansible testinfra pytest
+
+      - name: Run Molecule test
+        working-directory: ./roles/patroni
+        run: molecule test
+        env:
+          PY_COLORS : '1'
+          ANSIBLE_FORCE_COLOR: '1'

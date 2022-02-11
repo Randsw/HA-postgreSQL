@@ -5,7 +5,8 @@
 
 - import_tasks: configure.yml
 
-- meta: flush_handlers
+- name: Start handlers at role end
+  meta: flush_handlers
 
 - name: Ensure patroni is running
   systemd:

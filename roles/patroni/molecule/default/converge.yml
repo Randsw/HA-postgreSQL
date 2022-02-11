@@ -8,6 +8,10 @@
       - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "{{ ansible_default_ipv4.address }}/0", method: "md5"}
       - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "127.0.0.1/32", method: "md5"}
       - { type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
+    patroni_postgresql_pg_hba:
+      - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "{{ ansible_default_ipv4.address }}/0", method: "md5"}
+      - { type: "host", database: "replication", user: "{{ patroni_replication_username }}", address: "127.0.0.1/32", method: "md5"}
+      - { type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
     patroni_postgresql_config_dir: "/etc/postgresql/{{ patroni_postgresql_version }}/{{ patroni_scope }}"
     etcd_config:
       name: "{{ ansible_facts.hostname }}"

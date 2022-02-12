@@ -25,9 +25,6 @@ def test_etcd_config_exist(host):
     etcd_conf = host.file('/etc/etcd/etcd.yml')
     assert etcd_conf.exists
 
-def test_listening_postfres(host):
-    assert host.socket("tcp://0.0.0.0:5432").is_listening
-
 def test_postgres_config_exist(host):
     postgres_conf = host.file('/etc/postgresql/12/main/postgresql.conf')
     assert postgres_conf.exists

@@ -9,16 +9,6 @@
   when: patroni_install_from_pip
   changed_when: false
 
-- name: Create patroni data directory
-  file:
-    path: "{{ patroni_postgresql_data_dir }}"
-    state: directory
-    owner: "{{ patroni_system_user }}"
-    group: "{{ patroni_system_group }}"
-    mode: 0750
-  when: patroni_install_from_pip
-  changed_when: false
-
 - name: Prepare PostgreSQL | make sure the data directory "{{ patroni_postgresql_data_dir }}" is empty
   file:
     path: "{{ patroni_postgresql_data_dir }}"
